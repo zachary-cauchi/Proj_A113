@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Premake_DKP">
+      <UniqueIdentifier>{A834F91D-14EA-7113-9DDE-6BEA09936817}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Premake_DKP\include">
+      <UniqueIdentifier>{1B8424BA-87E5-01C8-1053-487A7CB33887}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Premake_DKP\source">
+      <UniqueIdentifier>{C889972C-B46D-5882-1DCE-52D509D14204}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Premake_DKP\include\gba_pic.h">
+      <Filter>Premake_DKP\include</Filter>
+    </ClInclude>
+    <ClInclude Include="Premake_DKP\include\input.h">
+      <Filter>Premake_DKP\include</Filter>
+    </ClInclude>
+    <ClInclude Include="Premake_DKP\include\toolbox.h">
+      <Filter>Premake_DKP\include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Premake_DKP\source\gba_pic.c">
+      <Filter>Premake_DKP\source</Filter>
+    </ClCompile>
+    <ClCompile Include="Premake_DKP\source\key_demo.c">
+      <Filter>Premake_DKP\source</Filter>
+    </ClCompile>
+    <ClCompile Include="Premake_DKP\source\toolbox.c">
+      <Filter>Premake_DKP\source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="premake5.lua" />
+  </ItemGroup>
+</Project>
