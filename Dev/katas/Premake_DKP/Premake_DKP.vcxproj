@@ -16,7 +16,7 @@
     <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
-    <OutDir>bin\Debug-windows-ARM\Premake_DKP\</OutDir>
+    <OutDir>bin\Debug\</OutDir>
     <IntDir>bin-int\Debug-windows-ARM\Premake_DKP\</IntDir>
     <WindowsSDKDesktopARMSupport>true</WindowsSDKDesktopARMSupport>
   </PropertyGroup>

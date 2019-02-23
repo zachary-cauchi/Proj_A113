@@ -9,9 +9,22 @@
 #include "input.h"
 
 #include "gba_pic.h"
+#include "gba_input.h"
 
 #define BTN_PAL  5
 #define CLR_UP   RGB15(27,27,29)
+
+u32 keyIsPressed(u32 btn) {
+	return btn & (u32) keysHeld();
+}
+
+u32 keyIsHeld(u32 btn) {
+	return btn & (u32) keysDown();
+}
+
+u32 keyIsReleased(u32 btn) {
+	return btn & (u32) keysUp();
+}
 
 int main()
 {
@@ -28,19 +41,25 @@ int main()
 	while(1)
 	{
 		vid_vsync();
+
 		// slowing down polling to make the changes visible
-		if((frame & 7) == 0)
-			key_poll();
-		// check state of each button
+		if ((frame & 7) == 0) {
+			//key_poll();
+			scanKeys();
+			
+		}
+		// Iterate over all buttons and check their states
+		// Depending on the state, change that buttons palette colour to the state colour
+		// red for pressed, yellow for released, lime for held, and the default for any other state
 		for(ii=0; ii<KI_MAX; ii++)
 		{
 			clr=0;
 			btn= 1<<ii;
-			if(key_hit(btn))
+			if(keyIsPressed(btn))
 				clr= CLR_RED;
-			else if(key_released(btn))
+			else if(keyIsReleased(btn))
 				clr= CLR_YELLOW;
-			else if(key_held(btn))
+			else if(keyIsHeld(btn))
 				clr= CLR_LIME;
 			else
 				clr= CLR_UP;

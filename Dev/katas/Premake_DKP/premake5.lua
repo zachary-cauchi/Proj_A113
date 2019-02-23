@@ -15,12 +15,11 @@ IncludeDirs["libgba"] = "../../../vendor/libgba/include"
 project "Premake_DKP"
 	kind "Makefile"
 	language "C"
+	debugger "GDB"
 
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
 	targetextension ".gba"
-
 
 	files
 	{
@@ -38,11 +37,6 @@ project "Premake_DKP"
 
 	buildcommands {
 		"cd %{prj.name} && make"
-	}
-
-	postbuildcommands
-	{
-		("{COPY} %{prj.name}/%{prj.name}.gba bin/" .. outputdir .. "/%{prj.name}")
 	}
 
 	cleancommands {
