@@ -39,6 +39,7 @@
     <ClInclude Include="Premake_DKP\include\gba_pic.h" />
     <ClInclude Include="Premake_DKP\include\input.h" />
     <ClInclude Include="Premake_DKP\include\toolbox.h" />
+    <ClInclude Include="Premake_DKP\include\util_defs.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Premake_DKP\source\gba_pic.c" />
