@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|ARM">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{A834F91D-14EA-7113-9DDE-6BEA09936817}</ProjectGuid>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+    <Keyword>MakeFileProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <OutDir>bin\Debug\</OutDir>
+    <IntDir>bin-int\Debug-windows-ARM\Premake_DKP\</IntDir>
+    <WindowsSDKDesktopARMSupport>true</WindowsSDKDesktopARMSupport>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <NMakeOutput>$(OutDir)Premake_DKP.gba</NMakeOutput>
+    <NMakeBuildCommandLine>cd $(ProjectName) &amp;&amp; make</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>cd $(ProjectName) &amp;&amp; make clean</NMakeCleanCommandLine>
+    <NMakeIncludeSearchPath>Premake_DKP\include;..\..\..\vendor\libgba\include</NMakeIncludeSearchPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="Premake_DKP\include\gba_pic.h" />
+    <ClInclude Include="Premake_DKP\include\input.h" />
+    <ClInclude Include="Premake_DKP\include\toolbox.h" />
+    <ClInclude Include="Premake_DKP\include\util_defs.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Premake_DKP\source\gba_pic.c" />
+    <ClCompile Include="Premake_DKP\source\key_demo.c" />
+    <ClCompile Include="Premake_DKP\source\toolbox.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="premake5.lua" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
