@@ -50,10 +50,3 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
-
-Resources/
-/Dev/**/*.gba
-/Dev/**/*.elf
-*.log
-*.cache
-**/.vs/
