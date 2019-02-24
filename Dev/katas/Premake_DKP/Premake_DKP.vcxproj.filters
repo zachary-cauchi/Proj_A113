@@ -21,6 +21,9 @@
     <ClInclude Include="Premake_DKP\include\toolbox.h">
       <Filter>Premake_DKP\include</Filter>
     </ClInclude>
+    <ClInclude Include="Premake_DKP\include\util_defs.h">
+      <Filter>Premake_DKP\include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Premake_DKP\source\gba_pic.c">
