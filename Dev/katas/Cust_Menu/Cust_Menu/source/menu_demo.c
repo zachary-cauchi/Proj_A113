@@ -15,6 +15,8 @@
 #include "title_pcx.h"
 #include "title_pulse_pcx.h"
 
+#include "splash_scr.h"
+
 //---------------------------------------------------------------------------------
 // storage space for palette data
 //---------------------------------------------------------------------------------
@@ -22,17 +24,15 @@ u16 PaletteBuffer[256];
 u16 PulsePaletteBuffer[256];
 
 // System variables
-unsigned int frame;
+u32 keyFrame;
 u32 pressed;
 u32 released;
 u32 held;
 
+// Method declarations
 void (*screen_eff)();
-void fade_out();
-void pulse_gray();
 void key_reads();
 void handleControls();
-void VblankInterrupt();
 
 //---------------------------------------------------------------------------------
 // Program entry point
@@ -42,71 +42,32 @@ int main(void)
 {
 	// Set up the interrupt handlers
 	irqInit();
-
-	irqSet(IRQ_VBLANK, VblankInterrupt);
-
 	// Enable Vblank Interrupt to allow VblankIntrWait
 	irqEnable(IRQ_VBLANK);
 
-	// Allow Interrupts
-	REG_IME = 0;
-
 	SetMode(MODE_4 | BG2_ON);		// screen mode & background to display
 
+	// Load all necessary image data
 	DecodePCX(title_pcx, (u16*)VRAM, PaletteBuffer);
 	DecodePCX(title_pulse_pcx, (u16*)VRAM, PulsePaletteBuffer);
 
-	// Set the initial screen mode to pulse gray()
-	screen_eff = pulse_gray;
+	screen_eff = splash_pulse_gray;	// Set the initial screen mode
+	setPal1(&PaletteBuffer);		// Load the first palette
+	setPal2(&PulsePaletteBuffer);	// Load the second palette
 
 	while (1)
 	{
 		VBlankIntrWait();
+		update();
+		// Process key inputs
+		key_reads();
+		handleControls();
+		(*screen_eff)(); // Perform title screen effect
 	}
-}
-
-// Create a screen 'fade out' effect by first fading the palette to gray, then black
-void fade_out() {
-	if ((frame & 60) == 0) {
-		FadeToBlack(60);
-	}
-
-}
-
-void pulse_title() {
-	// Switch between fading to the original palette colours and fading to a different palette
-	if ((frame & 45) == 0) {
-		FadeToPalette(PulsePaletteBuffer, 60);
-	} if ((frame & 90) == 0) {
-		FadeToPalette(PaletteBuffer, 60);
-	}
-}
-
-void pulse_gray() {
-	// Switch between fading to the original palette colours and fading to a greyscale palette
-	if ((frame & 60) == 0) {
-		FadeToGrayScale(4, 60);
-	} if ((frame & 120) == 0) {
-		FadeToPalette(PaletteBuffer, 60);
-	}
-}
-
-//---------------------------------------------------------------------------------
-void VblankInterrupt()
-//---------------------------------------------------------------------------------
-{
-	frame += 1;
-
-	// Process key inputs
-	key_reads();
-	handleControls();
-
-	// Perform title screen effect
-	(*screen_eff)();
 }
 
 void key_reads() {
-	if ((frame & 7) == 0) {
+	if ((keyFrame & 7) == 0) {
 		// Check for key updates and record the results to a buffer for later use
 		scanKeys();
 		pressed = keysDown();
@@ -116,13 +77,7 @@ void key_reads() {
 }
 
 void handleControls() {
-	if (pressed & KEY_UP) {
-		if (screen_eff != pulse_gray) screen_eff = pulse_gray;
-	}
-	else if (pressed & KEY_RIGHT) {
-		if (screen_eff != pulse_title) screen_eff = pulse_title;
-	}
-	else if (pressed & KEY_DOWN) {
-		if (screen_eff != fade_out) screen_eff = fade_out;
-	}
+	if (pressed & KEY_UP && screen_eff != splash_pulse_gray)			screen_eff = splash_pulse_gray;
+	else if (pressed & KEY_RIGHT && screen_eff != splash_pulse_title)	screen_eff = splash_pulse_title;
+	else if (pressed & KEY_DOWN && screen_eff != splash_fade_out)		screen_eff = splash_fade_out;
 }

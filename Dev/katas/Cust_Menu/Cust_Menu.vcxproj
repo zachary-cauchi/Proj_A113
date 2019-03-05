@@ -36,7 +36,11 @@
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Cust_Menu\include\splash_scr.h" />
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="Cust_Menu\source\menu_demo.c" />
+    <ClCompile Include="Cust_Menu\source\splash_scr.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="premake5.lua" />
