@@ -57,3 +57,5 @@ Resources/
 *.log
 *.cache
 **/.vs/
+/vendor/bin
+/vendor/tools

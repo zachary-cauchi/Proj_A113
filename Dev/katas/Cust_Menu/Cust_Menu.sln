@@ -1,0 +1,17 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Cust_Menu", "Cust_Menu.vcxproj", "{B829A712-2494-5B89-6DD2-0C2FD97B39DE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B829A712-2494-5B89-6DD2-0C2FD97B39DE}.Debug|ARM.ActiveCfg = Debug|ARM
+		{B829A712-2494-5B89-6DD2-0C2FD97B39DE}.Debug|ARM.Build.0 = Debug|ARM
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

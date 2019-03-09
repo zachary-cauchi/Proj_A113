@@ -1,0 +1,17 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OBJ_DKP", "OBJ_DKP.vcxproj", "{FE2E5D64-6A0E-DCFF-7326-67D6DF844261}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FE2E5D64-6A0E-DCFF-7326-67D6DF844261}.Debug|ARM.ActiveCfg = Debug|ARM
+		{FE2E5D64-6A0E-DCFF-7326-67D6DF844261}.Debug|ARM.Build.0 = Debug|ARM
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
