@@ -2,7 +2,7 @@
 #define _splash_scr_h_
 
 #include <gba_types.h>
-
+#include "mappy.h"
 #include "fade.h"
 
 void(*screen_eff)();

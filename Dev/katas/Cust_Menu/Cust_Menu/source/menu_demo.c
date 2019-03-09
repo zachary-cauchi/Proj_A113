@@ -6,6 +6,7 @@
 #include "gba_systemcalls.h"
 #include "gba_input.h"
 #include "gba_interrupt.h"
+#include "mappy.h"
 #include "pcx.h"
 #include "fade.h"
 
@@ -54,6 +55,8 @@ int main(void)
 	screen_eff = splash_pulse_gray;	// Set the initial screen mode
 	setPal1(&PaletteBuffer);		// Load the first palette
 	setPal2(&PulsePaletteBuffer);	// Load the second palette
+
+	dprintf("Initialised application with palettes %p, %p\n", &PaletteBuffer, &PulsePaletteBuffer);
 
 	while (1)
 	{
