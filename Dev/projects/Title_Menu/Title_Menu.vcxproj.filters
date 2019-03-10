@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Title_Menu">
+      <UniqueIdentifier>{BB0312CA-A7BB-5317-10C3-2C73FC99EE07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Title_Menu\include">
+      <UniqueIdentifier>{2EB6D842-1A9A-9998-83FA-93EB6FFD831A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Title_Menu\source">
+      <UniqueIdentifier>{7B45B411-E75B-B2A7-30D3-3DC99C28832F}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Title_Menu\include\splash_scr.h">
+      <Filter>Title_Menu\include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Title_Menu\source\menu_demo.c">
+      <Filter>Title_Menu\source</Filter>
+    </ClCompile>
+    <ClCompile Include="Title_Menu\source\splash_scr.c">
+      <Filter>Title_Menu\source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="premake5.lua" />
+  </ItemGroup>
+</Project>

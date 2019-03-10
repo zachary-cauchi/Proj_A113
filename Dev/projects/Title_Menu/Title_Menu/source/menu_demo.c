@@ -15,6 +15,7 @@
 //---------------------------------------------------------------------------------
 #include "title_pcx.h"
 #include "title_pulse_pcx.h"
+#include "main_menu_pcx.h"
 
 #include "splash_scr.h"
 
@@ -35,6 +36,14 @@ u32 held;
 void key_reads();
 void handleControls();
 
+// Controls the 'menu state'
+// 0 = splash screen mode
+// 1 = transition to title mode
+// 2 = title mode
+unsigned int state = 0;
+// Control variable for handling transition to title mode
+unsigned int transFrameCount = 0;
+
 //---------------------------------------------------------------------------------
 // Program entry point
 //---------------------------------------------------------------------------------
@@ -49,12 +58,12 @@ int main(void)
 	SetMode(MODE_4 | BG2_ON);		// screen mode & background to display
 
 	// Load all necessary image data
-	DecodePCX(title_pcx, (u16*)VRAM, PaletteBuffer);
-	DecodePCX(title_pulse_pcx, (u16*)VRAM, PulsePaletteBuffer);
+	LoadImage(title_pcx, PaletteBuffer);
+	LoadImage(title_pulse_pcx, PulsePaletteBuffer);
 
 	splash_screen_eff = splash_pulse_gray;	// Set the initial screen mode
-	splash_setPal1(&PaletteBuffer);		// Load the first palette
-	splash_setPal2(&PulsePaletteBuffer);	// Load the second palette
+	splash_set_pal1(&PaletteBuffer);		// Load the first palette
+	splash_set_pal2(&PulsePaletteBuffer);	// Load the second palette
 
 	dprintf("Initialised application with palettes %p, %p\n", &PaletteBuffer, &PulsePaletteBuffer);
 
@@ -62,13 +71,14 @@ int main(void)
 	{
 		VBlankIntrWait();
 		splash_update();
+		if (state == 1) transNewImage();	// If in transition mode, update transition
 		// Process key inputs
-		key_reads();
+		keyReads();
 		handleControls();
 	}
 }
 
-void key_reads() {
+void keyReads() {
 	if ((keyFrame & 7) == 0) {
 		// Check for key updates and record the results to a buffer for later use
 		scanKeys();
@@ -82,4 +92,28 @@ void handleControls() {
 	if (pressed & KEY_UP && splash_screen_eff != splash_pulse_gray)			splash_screen_eff = splash_pulse_gray;
 	else if (pressed & KEY_RIGHT && splash_screen_eff != splash_pulse_title)	splash_screen_eff = splash_pulse_title;
 	else if (pressed & KEY_DOWN && splash_screen_eff != splash_fade_out)		splash_screen_eff = splash_fade_out;
+	else if (pressed & KEY_LEFT) {
+		transNewImage();
+	}
+}
+
+void LoadImage(u8 *header, u16 *pal_p) {
+	DecodePCX(header, (u16 *)VRAM, pal_p);
+}
+
+void transNewImage() {
+	// If in state transition mode, wait until 60 frames have passed
+	if (state == 1) {
+		if ((++transFrameCount % 60) == 0) {
+			// Load the image and set the screen mode to use the 
+			LoadImage(main_menu_pcx, PaletteBuffer);
+			splash_screen_eff = splash_pulse_gray;
+			state = 2;
+		}
+	} else if (state == 0) {
+		// If this is reached, begin transitioning to a new 
+		splash_screen_eff = splash_fade_out;
+		state = 1;
+		transFrameCount = 0;
+	}
 }
