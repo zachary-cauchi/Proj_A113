@@ -36,9 +36,17 @@
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Title_Menu\build\main_menu_pcx.h" />
+    <ClInclude Include="Title_Menu\build\menu_spr_wip_pcx.h" />
+    <ClInclude Include="Title_Menu\build\title_pcx.h" />
+    <ClInclude Include="Title_Menu\build\title_pulse_pcx.h" />
+    <ClInclude Include="Title_Menu\include\graphics_controller.h" />
+    <ClInclude Include="Title_Menu\include\input_controller.h" />
     <ClInclude Include="Title_Menu\include\splash_scr.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Title_Menu\source\graphics_controller.c" />
+    <ClCompile Include="Title_Menu\source\input_controller.c" />
     <ClCompile Include="Title_Menu\source\menu_demo.c" />
     <ClCompile Include="Title_Menu\source\splash_scr.c" />
   </ItemGroup>

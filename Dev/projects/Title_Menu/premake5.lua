@@ -24,6 +24,7 @@ project "Title_Menu"
 	files
 	{
 		"Title_Menu/include/**.h",
+		"Title_Menu/build/**.h",
 		"Title_Menu/source/**.c",
 		"premake5.lua",
 	}
