@@ -21,17 +21,6 @@
 #include "graphics_controller.h"
 #include "input_controller.h"
 
-//---------------------------------------------------------------------------------
-// storage space for palette data
-//---------------------------------------------------------------------------------
-u16 EWRAM_DATA PaletteBuffer[256];
-u16 EWRAM_DATA PulsePaletteBuffer[256];
-
-// System variables
-
-
-// Method declarations
-
 void handleControls();
 
 //---------------------------------------------------------------------------------
@@ -48,10 +37,10 @@ int main(void)
 	SetMode(MODE_4 | BG2_ON);		// screen mode & background to display
 
 	// Load all necessary image data
-	graphics_LoadImage(title_pcx, PaletteBuffer);
-	graphics_LoadImage(title_pulse_pcx, PulsePaletteBuffer);
+	graphics_LoadImage(title_pcx, &PaletteBuffer);
+	graphics_LoadImage(title_pulse_pcx, &PulsePaletteBuffer);
 
-	splash_screen_eff = splash_pulse_gray;	// Set the initial screen mode
+	splash_screen_eff = splash_PulseGray;	// Set the initial screen mode
 	splash_set_pal1(&PaletteBuffer);		// Load the first palette
 	splash_set_pal2(&PulsePaletteBuffer);	// Load the second palette
 
@@ -60,8 +49,7 @@ int main(void)
 	while (1)
 	{
 		VBlankIntrWait();
-		splash_update();
-		if (state == 1) graphics_TransNewImage(main_menu_pcx, &PaletteBuffer);	// If in transition mode, update transition
+		graphics_Update();
 		// Process key inputs
 		input_key_reads();
 		handleControls();
@@ -69,10 +57,10 @@ int main(void)
 }
 
 void handleControls() {
-	if (input_key_pressed(KEY_UP) && splash_screen_eff != splash_pulse_gray)			splash_screen_eff = splash_pulse_gray;
-	else if (input_key_pressed(KEY_RIGHT) && splash_screen_eff != splash_pulse_title)	splash_screen_eff = splash_pulse_title;
-	else if (input_key_pressed(KEY_DOWN) && splash_screen_eff != splash_fade_out)		splash_screen_eff = splash_fade_out;
+	if (input_key_pressed(KEY_UP) && splash_screen_eff != splash_PulseGray)			splash_screen_eff = splash_PulseGray;
+	else if (input_key_pressed(KEY_RIGHT) && splash_screen_eff != splash_Pulse_Title)	splash_screen_eff = splash_Pulse_Title;
+	else if (input_key_pressed(KEY_DOWN) && splash_screen_eff != splash_FadeOut)		splash_screen_eff = splash_FadeOut;
 	else if (input_key_pressed(KEY_LEFT)) {
-		graphics_TransNewImage(main_menu_pcx, &PaletteBuffer);
+		graphics_TransNewImage(main_menu_pcx);
 	}
 }
