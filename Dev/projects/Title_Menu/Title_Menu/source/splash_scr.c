@@ -1,29 +1,29 @@
 
 #include "splash_scr.h"
 
-unsigned int _frame;
+static unsigned int _frame;	/**< The internal frame counter to use when rendering frames. */
 
 u16 *_pal_buff1;
 u16 *_pal_buff2;
 
-void splash_setPal1(u16 *pal)
+void splash_set_pal1(u16 *pal)
 {
 	_pal_buff1 = pal;
 }
 
-void splash_setPal2(u16 *pal)
+void splash_set_pal2(u16 *pal)
 {
 	_pal_buff2 = pal;
 }
 
-void splash_update()
+void splash_Update()
 {
 	_frame++;
 	(*splash_screen_eff)(); // Perform title screen effect
 }
 
 // Create a screen 'fade out' effect by first fading the palette to gray, then black
-void splash_fade_out()
+void splash_FadeOut()
 {
 	if ((_frame % 60) == 0) {
 		dprintf("Fading to black\n");
@@ -32,7 +32,7 @@ void splash_fade_out()
 
 }
 
-void splash_pulse_title()
+void splash_Pulse_Title()
 {
 	// Switch between fading to the original palette colours and fading to a different palette
 	if ((_frame % 90) == 45) {
@@ -44,7 +44,7 @@ void splash_pulse_title()
 	}
 }
 
-void splash_pulse_gray()
+void splash_PulseGray()
 {
 	// Switch between fading to the original palette colours and fading to a greyscale palette
 	if ((_frame % 60) == 0) {

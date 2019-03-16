@@ -5,11 +5,13 @@
 #include "mappy.h"
 #include "fade.h"
 
-void(*screen_eff)();
+// Selected effect to be used
+void(*splash_screen_eff)();
 
-void setPal1(u16 *pal);
-void setPal2(u16 *pal);
+void splash_setPal1(u16 *pal);
+void splash_setPal2(u16 *pal);
 
+void splash_update();
 void splash_fade_out();
 void splash_pulse_gray();
 void splash_pulse_title();
