@@ -1,6 +1,7 @@
 #ifndef _graphics_controller_h_
 #define _graphics_controller_h_
 
+#include "splash_scr.h"
 #include "gba_base.h"
 #include "gba_types.h"
 
@@ -11,6 +12,19 @@
 
 extern u16 EWRAM_DATA PaletteBuffer[256];		/**< Palette buffer 1 */
 extern u16 EWRAM_DATA PulsePaletteBuffer[256];	/**< Palette buffer 2 */
+
+/**
+ * A struct representing a splash screen. This contains its image data and the effect to be applied.
+ * WIP: Currently not implemented
+ */
+typedef struct SPLASH {
+	u8 * image_data;
+	u16 * main_pal;
+	u16 * alt_pal;
+	SPLASH_EFFECT effect;
+	u32 duration;
+	struct SPLASH * nextSplash;
+} SPLASH;
 
 /**
  * A finite set of state definitions that the graphics_controller recognises.
@@ -24,6 +38,12 @@ typedef enum STATE {
 
 static STATE state;				/**< The state buffer recognised by the graphics controller */
 unsigned int trans_frame_count;	/**< The frame count buffer used when in state 1 */
+
+/**
+ * Initialise a splash screen struct with the image data, splash effect, and duration provided.
+ * The splash palettes are set to the palette buffers by default.
+ */
+SPLASH * graphics_CreateSplash(u8 * image, void(*splash_eff)(), u32 duration);
 
 /**
  * Resets the state to zero;
