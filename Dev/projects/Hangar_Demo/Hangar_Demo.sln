@@ -1,0 +1,17 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Hangar_Demo", "Hangar_Demo.vcxproj", "{3A2F0E4D-A6E4-8642-2FD9-80199B8D7D46}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3A2F0E4D-A6E4-8642-2FD9-80199B8D7D46}.Debug|ARM.ActiveCfg = Debug|ARM
+		{3A2F0E4D-A6E4-8642-2FD9-80199B8D7D46}.Debug|ARM.Build.0 = Debug|ARM
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

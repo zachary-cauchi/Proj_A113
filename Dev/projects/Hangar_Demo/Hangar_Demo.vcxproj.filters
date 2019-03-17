@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Hangar_Demo">
+      <UniqueIdentifier>{3A2F0E4D-A6E4-8642-2FD9-80199B8D7D46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Hangar_Demo\build">
+      <UniqueIdentifier>{F9FE3836-6515-37CC-AE8C-C2ED1AE20754}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Hangar_Demo\include">
+      <UniqueIdentifier>{ADF08BB2-1952-69C0-A2BF-AF720E20A07F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Hangar_Demo\source">
+      <UniqueIdentifier>{1AAC9A24-0690-5B7A-6FF0-55CD5BF345FC}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Hangar_Demo\build\main_menu_pcx.h">
+      <Filter>Hangar_Demo\build</Filter>
+    </ClInclude>
+    <ClInclude Include="Hangar_Demo\build\menu_spr_wip_pcx.h">
+      <Filter>Hangar_Demo\build</Filter>
+    </ClInclude>
+    <ClInclude Include="Hangar_Demo\build\title_pcx.h">
+      <Filter>Hangar_Demo\build</Filter>
+    </ClInclude>
+    <ClInclude Include="Hangar_Demo\build\title_pulse_pcx.h">
+      <Filter>Hangar_Demo\build</Filter>
+    </ClInclude>
+    <ClInclude Include="Hangar_Demo\include\graphics_controller.h">
+      <Filter>Hangar_Demo\include</Filter>
+    </ClInclude>
+    <ClInclude Include="Hangar_Demo\include\input_controller.h">
+      <Filter>Hangar_Demo\include</Filter>
+    </ClInclude>
+    <ClInclude Include="Hangar_Demo\include\splash_scr.h">
+      <Filter>Hangar_Demo\include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Hangar_Demo\source\graphics_controller.c">
+      <Filter>Hangar_Demo\source</Filter>
+    </ClCompile>
+    <ClCompile Include="Hangar_Demo\source\input_controller.c">
+      <Filter>Hangar_Demo\source</Filter>
+    </ClCompile>
+    <ClCompile Include="Hangar_Demo\source\splash_scr.c">
+      <Filter>Hangar_Demo\source</Filter>
+    </ClCompile>
+    <ClCompile Include="Hangar_Demo\source\hangar_demo.c">
+      <Filter>Hangar_Demo\source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="premake5.lua" />
+  </ItemGroup>
+</Project>
