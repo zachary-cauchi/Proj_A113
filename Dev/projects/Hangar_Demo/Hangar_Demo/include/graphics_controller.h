@@ -40,12 +40,6 @@ static STATE state;				/**< The state buffer recognised by the graphics controll
 unsigned int trans_frame_count;	/**< The frame count buffer used when in state 1 */
 
 /**
- * Initialise a splash screen struct with the image data, splash effect, and duration provided.
- * The splash palettes are set to the palette buffers by default.
- */
-SPLASH * graphics_CreateSplash(u8 * image, void(*splash_eff)(), u32 duration);
-
-/**
  * Resets the state to zero;
  */
 static inline void graphics_StateReset() { state = STATE_SPLASH_SCREEN; }

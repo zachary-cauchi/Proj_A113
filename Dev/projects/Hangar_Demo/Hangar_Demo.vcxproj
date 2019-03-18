@@ -42,6 +42,7 @@
     <ClInclude Include="Hangar_Demo\build\title_pulse_pcx.h" />
     <ClInclude Include="Hangar_Demo\include\graphics_controller.h" />
     <ClInclude Include="Hangar_Demo\include\input_controller.h" />
+    <ClInclude Include="Hangar_Demo\include\randlib.h" />
     <ClInclude Include="Hangar_Demo\include\splash_scr.h" />
   </ItemGroup>
   <ItemGroup>

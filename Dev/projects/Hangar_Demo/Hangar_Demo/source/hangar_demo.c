@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "gba_video.h"
 #include "gba_systemcalls.h"
 #include "gba_input.h"
@@ -9,6 +6,7 @@
 #include "pcx.h"
 #include "fade.h"
 
+#include "randlib.h"
 #include "splash_scr.h"
 #include "graphics_controller.h"
 #include "input_controller.h"
@@ -24,7 +22,7 @@ void splash_HandleInputs();
 
 typedef enum TILE_STATE {
 	EMPTY = 0,
-	SLUG_HERE,
+	SLUG_HERE = 1,
 	SLUG_HIT,
 	MISS_HIT
 } TILE_STATE;
@@ -39,7 +37,7 @@ typedef struct SLUG {
 	u16 size;
 	bool isActive;
 	bool isDead;
-	Tile *coords;
+	Tile ** coords;
 } SLUG;
 
 //---------------------------------------------------------------------------------
@@ -48,19 +46,33 @@ typedef struct SLUG {
 
 /**
  * Initialises a 2-dimensional matrix of tiles by the given width and height.
- * Returns a pointer to the final array
+ * Returns a pointer to the final array.
  * @param width The width of the final matrix.
  * @param height The height of the final matrix.
+ * @return The newly created tile matrix.
  */
 Tile * InitTileMatrix(u16 width, u16 height);
+
+#define COORDS_2D(x, xMul, y) (x * xMul) + y
 
 /**
  * Initialises a slug based on the given Tile matrix of the given size.
  * @param map The tilemap to base the slug on.
  * @param maxWidth The maximum width of the slug, equal to or less than the width of the provided tilemap.
  * @param maxHeight The maximum height of the slug, equal to or less than the height of the provided tilemap.
+ * @return The newly created slug.
  */
 SLUG * CreateSlug(Tile * map, u16 maxWidth, u16 maxHeight, u16 size);
+
+/**
+ * Checks if the given tile has any empty tiles directly adjacent to it.
+ * @param map A pointer to the tile array representing the map.
+ * @param mapWidth The width of the map.
+ * @param mapHeight The height of the map.
+ * @param selectTile The tile to check.
+ * @return true on the first tile found with a state equal to TILE_STATE.EMPTY.
+ */
+bool TileHasEmptyNeighbours(Tile * map, int mapWidth, int mapHeight, Tile * selectTile);
 
 /**
  * Destroys the given slug, freeing its memory.
@@ -84,12 +96,11 @@ int main(void)
 //---------------------------------------------------------------------------------
 {
 
-	time_t t;
-	srand((unsigned) time(&t));
-
 	Tile * tiles = InitTileMatrix(HANGAR_HEIGHT, HANGAR_WIDTH);
 
 	SLUG * slug = CreateSlug(tiles, HANGAR_WIDTH, HANGAR_HEIGHT, SLUG_SIZE);
+
+	dprintf("Sample tile at index 2: %hu, %hu at location %p\n", slug->coords[2]->x, slug->coords[2]->y, slug->coords[2]);
 
 	// Set up the interrupt handlers
 	//irqInit();
@@ -125,15 +136,16 @@ int main(void)
 Tile * InitTileMatrix(u16 width, u16 height) {
 	
 	// Begin by allocating enough memory to store an array of the desired amount of tiles
-	Tile * tiles = malloc(sizeof tiles * (width * height));
+	Tile * tiles = malloc(sizeof (Tile) * (width * height));
 
+	// Initialise the array to a 
 	for (int x = 0; x < width; x++) {
 		for (int y = 0; y < height; y++) {
-			Tile * tile = &tiles[(x * height) + y];
+			Tile * tile = &tiles[COORDS_2D(x, height, y)];
 			tile->x = x;
 			tile->y = y;
 			tile->state = EMPTY;
-			dprintf("Initialised Tile %d %d at location %p\n", tile->x, tile->y, tile);
+			// dprintf("Initialised Tile %d %d at location %p\n", tile->x, tile->y, tile);
 		}
 	}
 
@@ -142,50 +154,123 @@ Tile * InitTileMatrix(u16 width, u16 height) {
 
 SLUG * CreateSlug(Tile * map, u16 maxWidth, u16 maxHeight, u16 size) {
 
-	u32 currTile;
-	u16 randX;		//< Random x-coordinate buffer
-	u16 randY;		//< Random y-coordinate buffer
+	int randX;				//< Random x-coordinate buffer
+	int randY;				//< Random y-coordinate buffer
+	u32 selectedTile = 0;	//< The currently active tile
+	bool coordsValid = true;//< Used for checking if the generated coordinates are within range or not
 
 	SLUG * slug = malloc(sizeof * slug);				//< The slug to create
 	Tile ** coords = malloc(sizeof (Tile *) * size);	//< The coordinates of the slug
 
-	slug->coords = *coords;	//< Assign the new coords array to the slug.
+	// Getting the coordinates for the first tile
+	randX = qran_range(0, maxWidth);
+	randY = qran_range(0, maxHeight);
 
-	// Temporary initialisation of the coords array by assigning test pointers
-	for (int tile = 0; tile < size; tile++) {
-		coords[tile] = map + tile;
+	// Assigning the first tile to the tile array
+	coords[0] = &map[COORDS_2D(randX, maxHeight, randY)];
+	coords[0]->state = SLUG_HERE;
+
+	/**
+	 * 1. Check if the selected starting tile has empty neighbours.
+	 * 1.1. If not, select a different starting tile (at random).
+	 * 2. Select a random set of coordinates.
+	 * 2.1. Validate those coordinates, making sure they are in range.
+	 * 2.2. If the tile is not empty, reiterate until an empty tile is chosen.
+	 * 3. Add the tile to the coordinates list.
+	 * 4. Mark the newly selected tile as full.
+	 * 5. Set the selected starting tile to the new tile.
+	 */
+
+	for (int tile = 1; tile < size; tile++) {
+
+		// 1. Checking if tile has empty neighbours.
+		while (!TileHasEmptyNeighbours(map, maxWidth, maxHeight, coords[selectedTile])) {
+			// 1.1. Reassigning selected tile.
+			selectedTile = qran_range(0, tile);
+			dprintf("Had to reassign selected tile to %d\n", selectedTile);
+		}
+
+		do {
+
+			coordsValid = true;
+
+			// 2. Select random coords.
+			// Pick a new adjacent tile around the previous tile's coordinates
+			randX = ((qran() % 3) - 1);
+			randY = ((qran() % 3) - 1);
+
+			randX += coords[selectedTile]->x;
+			randY += coords[selectedTile]->y;
+
+			dprintf("Chose new coordinates %d, %d\n", randX, randY);
+
+			// 2.1. Validate the coordinates are in-range
+			if (randX < 0 || randX >= maxWidth) {
+				dprintf("X-coord %d invalid\n", randX);
+				coordsValid = false;
+			}
+			if (randY < 0 || randY >= maxHeight) {
+				dprintf("Y-coord %d invalid\n", randY);
+				coordsValid = false;
+			}
+
+		// 2.2. Check if chosen tile is not empty and coords are valid.
+		} while (map[COORDS_2D(randX, maxHeight, randY)].state != EMPTY || !coordsValid);
+
+		dprintf("Assigning new tile %d, %d\n", randX, randY);
+
+		// 3. Add the tile to the list of slug tiles.
+		coords[tile] = &map[COORDS_2D(randX, maxHeight, randY)];
+		// 4. Mark the added tile as full.
+		coords[tile]->state = SLUG_HERE;
+		
+		// 5. Set the new selected tile.
+		selectedTile = tile;
+
+		dprintf("Assigned new tile to %d\n", selectedTile);
+
 	}
+
+	slug->coords = coords;	//< Assign the new coords array to the slug.
 
 	// Testing of the assigned coords tiles
 	for (int tile = 0; tile < size; tile++) {
-		dprintf("Testing referenced Tile %d %d at location %p\n", coords[tile]->x, coords[tile]->y, coords[tile]);
+		dprintf("Testing referenced Tile %d %d at location %p\n", slug->coords[tile]->x, slug->coords[tile]->y, slug->coords[tile]);
 	}
+
+	
 
 	return slug;
 
 }
 
+bool TileHasEmptyNeighbours(Tile * map, int mapWidth, int mapHeight, Tile * selectTile) {
+	int coordX, coordY;
+	TILE_STATE state;
+
+	// Iterate over all tiles adjacent to the selected block.
+	for (int i = -1; i < 2; i++) {
+		for (int j = -1; j < 2; j++) {
+			// Get the coordinates of the tile to be tested.
+			coordX = selectTile->x + i;
+			coordY = selectTile->y + j;
+
+			// If the coordinates are out of range, skip to the next tile
+			if (coordX < 0 || coordX >= mapWidth) continue;
+			if (coordY < 0 || coordY >= mapHeight) continue;
+
+			// If the state of this tile is EMPTY, return true
+			state = map[COORDS_2D(coordX, mapHeight, coordY)].state;
+			dprintf("Checking state of tile %hu, %hu (%d)\n", coordX, coordY, state);
+			if (state == EMPTY) return true;
+		}
+	}
+	return false;
+}
+
 void DestroySlug(SLUG * slug) {
 	free(slug->coords);
 	free(slug);
-}
-
-Tile * Back_InitTileMatrix() {
-
-	// Begin by allocating enough memory to store an array of the desired amount of tiles
-	Tile tiles[HANGAR_WIDTH][HANGAR_HEIGHT];
-
-	for (int x = 0; x < HANGAR_WIDTH; x++) {
-		for (int y = 0; y < HANGAR_HEIGHT; y++) {
-			tiles[x][y].x = x;
-			tiles[x][y].y = y;
-			tiles[x][y].state = EMPTY;
-			dprintf("Initialised Tile %d %d at location %p\n", tiles[x][y].x, tiles[x][y].y, &tiles[x][y]);
-		}
-	}
-
-	return tiles;
-
 }
 
 void splash_HandleInputs() {

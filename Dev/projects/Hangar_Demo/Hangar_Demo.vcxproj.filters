@@ -36,6 +36,9 @@
     <ClInclude Include="Hangar_Demo\include\splash_scr.h">
       <Filter>Hangar_Demo\include</Filter>
     </ClInclude>
+    <ClInclude Include="Hangar_Demo\include\randlib.h">
+      <Filter>Hangar_Demo\include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Hangar_Demo\source\graphics_controller.c">
