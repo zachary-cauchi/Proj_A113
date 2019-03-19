@@ -39,6 +39,12 @@
     <ClInclude Include="Hangar_Demo\include\randlib.h">
       <Filter>Hangar_Demo\include</Filter>
     </ClInclude>
+    <ClInclude Include="Hangar_Demo\include\slug.h">
+      <Filter>Hangar_Demo\include</Filter>
+    </ClInclude>
+    <ClInclude Include="Hangar_Demo\include\tile.h">
+      <Filter>Hangar_Demo\include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Hangar_Demo\source\graphics_controller.c">
@@ -51,6 +57,12 @@
       <Filter>Hangar_Demo\source</Filter>
     </ClCompile>
     <ClCompile Include="Hangar_Demo\source\hangar_demo.c">
+      <Filter>Hangar_Demo\source</Filter>
+    </ClCompile>
+    <ClCompile Include="Hangar_Demo\source\slug.c">
+      <Filter>Hangar_Demo\source</Filter>
+    </ClCompile>
+    <ClCompile Include="Hangar_Demo\source\tile.c">
       <Filter>Hangar_Demo\source</Filter>
     </ClCompile>
   </ItemGroup>

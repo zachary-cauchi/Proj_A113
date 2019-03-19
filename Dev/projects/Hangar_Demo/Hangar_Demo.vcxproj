@@ -43,13 +43,17 @@
     <ClInclude Include="Hangar_Demo\include\graphics_controller.h" />
     <ClInclude Include="Hangar_Demo\include\input_controller.h" />
     <ClInclude Include="Hangar_Demo\include\randlib.h" />
+    <ClInclude Include="Hangar_Demo\include\slug.h" />
     <ClInclude Include="Hangar_Demo\include\splash_scr.h" />
+    <ClInclude Include="Hangar_Demo\include\tile.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Hangar_Demo\source\graphics_controller.c" />
     <ClCompile Include="Hangar_Demo\source\input_controller.c" />
     <ClCompile Include="Hangar_Demo\source\hangar_demo.c" />
+    <ClCompile Include="Hangar_Demo\source\slug.c" />
     <ClCompile Include="Hangar_Demo\source\splash_scr.c" />
+    <ClCompile Include="Hangar_Demo\source\tile.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="premake5.lua" />
