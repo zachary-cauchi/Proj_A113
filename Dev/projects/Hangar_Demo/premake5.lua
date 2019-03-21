@@ -31,6 +31,7 @@ project "Hangar_Demo"
 
 	includedirs {
 		"Hangar_Demo/include",
+		"Hangar_Demo/build/",
 		"%{IncludeDirs.libgba}"
 	}
 

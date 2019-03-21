@@ -18,6 +18,7 @@
 #include "title_pcx.h"
 #include "title_pulse_pcx.h"
 #include "main_menu_pcx.h"
+#include "GROUND_EXP_pcx.h"
 
 void splash_HandleInputs();
 
@@ -33,8 +34,17 @@ void splash_HandleInputs();
 #define HANGAR_WIDTH 5
 #define HANGAR_HEIGHT 5
 
+#define SB_PAGE 31
+
 Tile * tiles;
 Slug * slug;
+
+int startGridX = 3;	//< Starting tile X of slug grid
+int startGridY = 3;	//< Starting tile Y of slug grid
+int selectX;		//< Selected slug grid tile on X-axis (offset not absolute).
+int selectY;		//< Selected slug grid tile on Y-axis (offset not absolute).
+int prevX;			//< Previous selected slug grid tile on X-axis (offset not absolute).
+int prevY;			//< Previous selected slug grid tile on Y-axis (offset not absolute).
 
 //---------------------------------------------------------------------------------
 // Program entry point
@@ -43,18 +53,32 @@ int main(void)
 //---------------------------------------------------------------------------------
 {
 
-	tiles = Tile_InitTileMatrix(HANGAR_HEIGHT, HANGAR_WIDTH);
+	// Enable Large background, use Screenblock 31 and enable 16-color mode
+	REG_BG0CNT = TEXTBG_SIZE_512x512 | SCREEN_BASE(SB_PAGE) | BG_256_COLOR;
+	SetMode(MODE_0 | BG0_ON);		// screen mode & background to display
 
+	// Load tile set and palette 
+	DecodePCX(GROUND_EXP_pcx, CHAR_BASE_ADR(0), BG_PALETTE);
+
+	tiles = Tile_InitTileMatrix(HANGAR_HEIGHT, HANGAR_WIDTH);
 	slug = Slug_CreateSlug(tiles, HANGAR_WIDTH, HANGAR_HEIGHT, SLUG_SIZE);
 
 	dprintf("Sample tile at index 2: %hu, %hu at location %p\n", slug->coords[2]->x, slug->coords[2]->y, slug->coords[2]);
 
-	// Set up the interrupt handlers
-	//irqInit();
-	// Enable Vblank Interrupt to allow VblankIntrWait
-	//irqEnable(IRQ_VBLANK);
+	// Fill the screenblock the default tile
+	for (int x = 0; x < 32; x++) {
+		for (int y = 0; y < 32; y++) {
+			MAP[SB_PAGE][y][x] = 0;
+		}
+	}
 
-	//SetMode(MODE_4 | BG2_ON);		// screen mode & background to display
+	// Draw the slug ground map
+	drawGroundMap(SB_PAGE, startGridX, startGridY, HANGAR_WIDTH, HANGAR_HEIGHT);
+
+	// Set up the interrupt handlers
+	irqInit();
+	// Enable Vblank Interrupt to allow VblankIntrWait
+	irqEnable(IRQ_VBLANK);
 
 	// Load all necessary image data
 	//graphics_LoadImage(title_pcx, &PaletteBuffer);
@@ -68,6 +92,7 @@ int main(void)
 
 	while (1)
 	{
+		VBlankIntrWait();
 		//graphics_Update();
 		// Process key inputs
 		input_key_reads();
@@ -80,11 +105,51 @@ int main(void)
 
 }
 
+void drawGroundMap(int sb, int startX, int startY, int sizeX, int sizeY) {
+	
+	int endX = startX + sizeX;
+	int endY = startY + sizeY;
+
+	// From the given start till the given end, set each tile to the slug ground tile
+	for (int x = startX; x < endX; x++) {
+		for (int y = startY; y < endY; y++) {
+			MAP[sb][x][y] = 12;
+		}
+	}
+
+}
+
 void hangar_HandleInputs() {
+
+	// Input handling for selected tile x-coordinate movement.
+	if (input_key_pressed(KEY_LEFT) && selectX > 0) {
+		prevX = selectX--;
+	} else if (input_key_pressed(KEY_RIGHT) && selectX < HANGAR_WIDTH - 1) {
+		prevX = selectX++;
+	}
+
+	// Input handling for selected tile y-coordinate movement
+	if (input_key_pressed(KEY_UP) && selectY > 0) {
+		prevY = selectY--;
+	}
+	else if (input_key_pressed(KEY_DOWN) && selectY < HANGAR_HEIGHT - 1) {
+		prevY= selectY++;
+	}
+
 	if (input_key_pressed(KEY_SELECT)) {
 		Slug_DestroySlug(slug);
 		slug = Slug_CreateSlug(tiles, HANGAR_WIDTH, HANGAR_HEIGHT, SLUG_SIZE);
 	}
+
+	// If the selected tile has changed, mark it as selected and clear the previous tile.
+	if (prevX != selectX | prevY != selectY) {
+		MAP[SB_PAGE][startGridY + selectY][startGridX + selectX] = 1;
+		MAP[SB_PAGE][startGridY + prevY][startGridX + prevX] = 12;
+
+		prevX = selectX;
+		prevY = selectY;
+	}
+
 }
 
 void splash_HandleInputs() {

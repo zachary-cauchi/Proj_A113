@@ -31,7 +31,7 @@
     <NMakeOutput>$(OutDir)Hangar_Demo.gba</NMakeOutput>
     <NMakeBuildCommandLine>cd $(ProjectName) &amp;&amp; make</NMakeBuildCommandLine>
     <NMakeCleanCommandLine>cd $(ProjectName) &amp;&amp; make clean</NMakeCleanCommandLine>
-    <NMakeIncludeSearchPath>Hangar_Demo\include;..\..\..\vendor\libgba\include</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>Hangar_Demo\include;Hangar_Demo\build;..\..\..\vendor\libgba\include</NMakeIncludeSearchPath>
   </PropertyGroup>
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
@@ -40,6 +40,7 @@
     <ClInclude Include="Hangar_Demo\build\menu_spr_wip_pcx.h" />
     <ClInclude Include="Hangar_Demo\build\title_pcx.h" />
     <ClInclude Include="Hangar_Demo\build\title_pulse_pcx.h" />
+    <ClInclude Include="Hangar_Demo\include\BG_0_GROUND.h" />
     <ClInclude Include="Hangar_Demo\include\graphics_controller.h" />
     <ClInclude Include="Hangar_Demo\include\input_controller.h" />
     <ClInclude Include="Hangar_Demo\include\randlib.h" />
@@ -48,9 +49,10 @@
     <ClInclude Include="Hangar_Demo\include\tile.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Hangar_Demo\source\BG_0_GROUND.c" />
     <ClCompile Include="Hangar_Demo\source\graphics_controller.c" />
-    <ClCompile Include="Hangar_Demo\source\input_controller.c" />
     <ClCompile Include="Hangar_Demo\source\hangar_demo.c" />
+    <ClCompile Include="Hangar_Demo\source\input_controller.c" />
     <ClCompile Include="Hangar_Demo\source\slug.c" />
     <ClCompile Include="Hangar_Demo\source\splash_scr.c" />
     <ClCompile Include="Hangar_Demo\source\tile.c" />
