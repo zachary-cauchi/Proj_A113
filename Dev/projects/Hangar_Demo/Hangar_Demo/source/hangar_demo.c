@@ -36,9 +36,19 @@ void splash_HandleInputs();
 
 #define SB_PAGE 31
 
+typedef enum HANGER_TILE_SIZE {
+	NONE = 0,
+	HANGAR_SMALL,
+	HANGAR_MEDIUM,
+	HANGAR_LARGE
+} HANGAR_TILE_SIZE;
+
 Tile * tiles;
 Slug * slug;
 
+#define HANGAR_SIZE HANGAR_MEDIUM
+#define HANGAR_SIZE_X HANGAR_WIDTH * HANGAR_SIZE
+#define HANGAR_SIZE_Y HANGAR_HEIGHT * HANGAR_SIZE
 int startGridX = 3;	//< Starting tile X of slug grid
 int startGridY = 3;	//< Starting tile Y of slug grid
 int selectX;		//< Selected slug grid tile on X-axis (offset not absolute).
@@ -68,12 +78,15 @@ int main(void)
 	// Fill the screenblock the default tile
 	for (int x = 0; x < 32; x++) {
 		for (int y = 0; y < 32; y++) {
-			MAP[SB_PAGE][y][x] = 0;
+			MAP[SB_PAGE][y][x] = 13;
 		}
 	}
 
 	// Draw the slug ground map
-	drawGroundMap(SB_PAGE, startGridX, startGridY, HANGAR_WIDTH, HANGAR_HEIGHT);
+	drawGroundMap(SB_PAGE, HANGAR_SIZE, startGridX, startGridY, HANGAR_WIDTH, HANGAR_HEIGHT);
+
+	// Draw initial starting tile
+	drawHangarTile(31, startGridX, startGridY, 1, HANGAR_SIZE);
 
 	// Set up the interrupt handlers
 	irqInit();
@@ -105,15 +118,15 @@ int main(void)
 
 }
 
-void drawGroundMap(int sb, int startX, int startY, int sizeX, int sizeY) {
+void drawGroundMap(int sb, int tileSize, int startX, int startY, int sizeX, int sizeY) {
 	
-	int endX = startX + sizeX;
-	int endY = startY + sizeY;
+	int endX = startX + sizeX * tileSize;
+	int endY = startY + sizeY * tileSize;
 
 	// From the given start till the given end, set each tile to the slug ground tile
-	for (int x = startX; x < endX; x++) {
-		for (int y = startY; y < endY; y++) {
-			MAP[sb][x][y] = 12;
+	for (int x = startX; x < endX; x += tileSize) {
+		for (int y = startY; y < endY; y += tileSize) {
+			drawHangarTile(sb, x, y, 2, HANGAR_SIZE);
 		}
 	}
 
@@ -123,17 +136,21 @@ void hangar_HandleInputs() {
 
 	// Input handling for selected tile x-coordinate movement.
 	if (input_key_pressed(KEY_LEFT) && selectX > 0) {
-		prevX = selectX--;
-	} else if (input_key_pressed(KEY_RIGHT) && selectX < HANGAR_WIDTH - 1) {
-		prevX = selectX++;
+		prevX = selectX;
+		selectX -= HANGAR_SIZE;
+	} else if (input_key_pressed(KEY_RIGHT) && selectX < HANGAR_SIZE_X - HANGAR_SIZE) {
+		prevX = selectX;
+		selectX += HANGAR_SIZE;
 	}
 
 	// Input handling for selected tile y-coordinate movement
 	if (input_key_pressed(KEY_UP) && selectY > 0) {
-		prevY = selectY--;
+		prevY = selectY;
+		selectY -= HANGAR_SIZE;
 	}
-	else if (input_key_pressed(KEY_DOWN) && selectY < HANGAR_HEIGHT - 1) {
-		prevY= selectY++;
+	else if (input_key_pressed(KEY_DOWN) && selectY < HANGAR_SIZE_Y - HANGAR_SIZE) {
+		prevY = selectY;
+		selectY += HANGAR_SIZE;
 	}
 
 	if (input_key_pressed(KEY_SELECT)) {
@@ -143,11 +160,47 @@ void hangar_HandleInputs() {
 
 	// If the selected tile has changed, mark it as selected and clear the previous tile.
 	if (prevX != selectX | prevY != selectY) {
-		MAP[SB_PAGE][startGridY + selectY][startGridX + selectX] = 1;
-		MAP[SB_PAGE][startGridY + prevY][startGridX + prevX] = 12;
+		dprintf("Getting here");
+		drawHangarTile(SB_PAGE, startGridX + selectX, startGridY + selectY, 1, HANGAR_SIZE);
+		drawHangarTile(SB_PAGE, startGridX + prevX, startGridY + prevY, 2, HANGAR_SIZE);
 
 		prevX = selectX;
 		prevY = selectY;
+	}
+
+}
+
+void drawHangarTile(int sb, int coordX, int coordY, int tileI, HANGAR_TILE_SIZE size, int altTileI) {
+
+	// dprintf("Received coords %d, %d for tile %d\n", coordX, coordY, tileI);
+
+	switch (size) {
+
+	case HANGAR_SMALL:
+		MAP[sb][coordY][coordX] = tileI;
+		break;
+
+	case HANGAR_MEDIUM:
+		MAP[sb][coordY][coordX] = tileI;
+		MAP[sb][coordY][coordX + 1] = tileI | BIT(10);
+		MAP[sb][coordY + 1][coordX] = tileI | BIT(11);
+		MAP[sb][coordY + 1][coordX + 1] = tileI | BIT(10) | BIT(11);
+		break;
+
+	case HANGAR_LARGE:
+		MAP[sb][coordY][coordX] = tileI;
+		MAP[sb][coordY][coordX + 1] = altTileI;
+		MAP[sb][coordY][coordX + 2] = tileI | BIT(10);
+
+		MAP[sb][coordY + 1][coordX] = altTileI;
+		MAP[sb][coordY + 1][coordX + 1] = altTileI;
+		MAP[sb][coordY + 1][coordX + 2] = altTileI | BIT(10);
+
+		MAP[sb][coordY + 2][coordX] = tileI | BIT(11);
+		MAP[sb][coordY + 2][coordX + 1] = altTileI | BIT(11);
+		MAP[sb][coordY + 2][coordX + 2] = tileI | BIT(11) | BIT(10);
+		break;
+
 	}
 
 }
