@@ -8,6 +8,7 @@
 
 #include "tile.h"
 #include "slug.h"
+#include "hangar.h"
 #include "splash_scr.h"
 #include "graphics_controller.h"
 #include "input_controller.h"
@@ -21,6 +22,7 @@
 #include "GROUND_EXP_pcx.h"
 
 void splash_HandleInputs();
+void hangar_HandleInputs();
 
 //---------------------------------------------------------------------------------
 // Function Declarations
@@ -31,30 +33,24 @@ void splash_HandleInputs();
 //---------------------------------------------------------------------------------
 
 #define SLUG_SIZE 5
-#define HANGAR_WIDTH 5
-#define HANGAR_HEIGHT 5
 
 #define SB_PAGE 31
-
-typedef enum HANGER_TILE_SIZE {
-	NONE = 0,
-	HANGAR_SMALL,
-	HANGAR_MEDIUM,
-	HANGAR_LARGE
-} HANGAR_TILE_SIZE;
 
 Tile * tiles;
 Slug * slug;
 
-#define HANGAR_SIZE HANGAR_MEDIUM
-#define HANGAR_SIZE_X HANGAR_WIDTH * HANGAR_SIZE
-#define HANGAR_SIZE_Y HANGAR_HEIGHT * HANGAR_SIZE
-int startGridX = 3;	//< Starting tile X of slug grid
-int startGridY = 3;	//< Starting tile Y of slug grid
 int selectX;		//< Selected slug grid tile on X-axis (offset not absolute).
 int selectY;		//< Selected slug grid tile on Y-axis (offset not absolute).
 int prevX;			//< Previous selected slug grid tile on X-axis (offset not absolute).
 int prevY;			//< Previous selected slug grid tile on Y-axis (offset not absolute).
+
+int hangarEmptyT = 2;
+
+HANGAR_TILE_SIZE h_size;
+int h_width;
+int h_height;
+int startGridX = 3;	//< Starting tile X of slug grid
+int startGridY = 3;	//< Starting tile Y of slug grid
 
 //---------------------------------------------------------------------------------
 // Program entry point
@@ -63,6 +59,10 @@ int main(void)
 //---------------------------------------------------------------------------------
 {
 
+	h_size = HANGAR_MEDIUM;
+	h_width = 5;
+	h_height = 5;
+
 	// Enable Large background, use Screenblock 31 and enable 16-color mode
 	REG_BG0CNT = TEXTBG_SIZE_512x512 | SCREEN_BASE(SB_PAGE) | BG_256_COLOR;
 	SetMode(MODE_0 | BG0_ON);		// screen mode & background to display
@@ -70,23 +70,12 @@ int main(void)
 	// Load tile set and palette 
 	DecodePCX(GROUND_EXP_pcx, CHAR_BASE_ADR(0), BG_PALETTE);
 
-	tiles = Tile_InitTileMatrix(HANGAR_HEIGHT, HANGAR_WIDTH);
-	slug = Slug_CreateSlug(tiles, HANGAR_WIDTH, HANGAR_HEIGHT, SLUG_SIZE);
+	tiles = Tile_InitTileMatrix(h_height, h_width);
+	slug = Slug_CreateSlug(tiles, h_width, h_height, SLUG_SIZE);
 
-	dprintf("Sample tile at index 2: %hu, %hu at location %p\n", slug->coords[2]->x, slug->coords[2]->y, slug->coords[2]);
+	hangar_Init();
 
-	// Fill the screenblock the default tile
-	for (int x = 0; x < 32; x++) {
-		for (int y = 0; y < 32; y++) {
-			MAP[SB_PAGE][y][x] = 13;
-		}
-	}
-
-	// Draw the slug ground map
-	drawGroundMap(SB_PAGE, HANGAR_SIZE, startGridX, startGridY, HANGAR_WIDTH, HANGAR_HEIGHT);
-
-	// Draw initial starting tile
-	drawHangarTile(31, startGridX, startGridY, 1, HANGAR_SIZE);
+	drawSlug(slug);
 
 	// Set up the interrupt handlers
 	irqInit();
@@ -110,6 +99,15 @@ int main(void)
 		// Process key inputs
 		input_key_reads();
 		hangar_HandleInputs();
+
+		if (input_key_pressed(KEY_SELECT)) {
+			Slug_DestroySlug(slug);
+			slug = Slug_CreateSlug(tiles, h_width, h_height, SLUG_SIZE);
+
+			hangar_Init();
+			drawSlug(slug);
+		}
+
 		//splash_HandleInputs();
 	}
 
@@ -118,18 +116,38 @@ int main(void)
 
 }
 
-void drawGroundMap(int sb, int tileSize, int startX, int startY, int sizeX, int sizeY) {
-	
-	int endX = startX + sizeX * tileSize;
-	int endY = startY + sizeY * tileSize;
+void drawSlug(Slug * s) {
+	for (int i = 0; i < s->size; i++) {
+		drawHangarTile(s->coords[i]->x * h_size + startGridX, s->coords[i]->y * h_size + startGridY, 8, 8);
+	}
+}
 
-	// From the given start till the given end, set each tile to the slug ground tile
-	for (int x = startX; x < endX; x += tileSize) {
-		for (int y = startY; y < endY; y += tileSize) {
-			drawHangarTile(sb, x, y, 2, HANGAR_SIZE);
+void hangar_InitSelector() {
+	selectX = 0;
+	selectY = 0;
+	prevX = 0;
+	prevY = 0;
+	// Draw initial starting tile
+	drawHangarTile(startGridX, startGridY, 1, 0);
+}
+
+void hangar_Init() {
+
+	clearScreenblock(SB_PAGE, 13);
+
+	// Draw the slug ground map
+	drawGroundMap(SB_PAGE, h_size, startGridX, startGridY, h_width, h_height);
+
+	// Draw initial starting tile
+	drawHangarTile(startGridX, startGridY, 1, 0);
+}
+
+void clearScreenblock(int sb, int filltile) {
+	for (int x = 0; x < 32; x++) {
+		for (int y = 0; y < 32; y++) {
+			MAP[SB_PAGE][y][x] = filltile;
 		}
 	}
-
 }
 
 void hangar_HandleInputs() {
@@ -137,32 +155,44 @@ void hangar_HandleInputs() {
 	// Input handling for selected tile x-coordinate movement.
 	if (input_key_pressed(KEY_LEFT) && selectX > 0) {
 		prevX = selectX;
-		selectX -= HANGAR_SIZE;
-	} else if (input_key_pressed(KEY_RIGHT) && selectX < HANGAR_SIZE_X - HANGAR_SIZE) {
+		selectX -= h_size;
+	}
+	else if (input_key_pressed(KEY_RIGHT) && selectX < hangar_total_width - h_size) {
 		prevX = selectX;
-		selectX += HANGAR_SIZE;
+		selectX += h_size;
 	}
 
 	// Input handling for selected tile y-coordinate movement
 	if (input_key_pressed(KEY_UP) && selectY > 0) {
 		prevY = selectY;
-		selectY -= HANGAR_SIZE;
+		selectY -= h_size;
 	}
-	else if (input_key_pressed(KEY_DOWN) && selectY < HANGAR_SIZE_Y - HANGAR_SIZE) {
+	else if (input_key_pressed(KEY_DOWN) && selectY < hangar_total_height - h_size) {
 		prevY = selectY;
-		selectY += HANGAR_SIZE;
+		selectY += h_size;
 	}
 
-	if (input_key_pressed(KEY_SELECT)) {
-		Slug_DestroySlug(slug);
-		slug = Slug_CreateSlug(tiles, HANGAR_WIDTH, HANGAR_HEIGHT, SLUG_SIZE);
+	// Check if the user wishes to increase or decrease the hangar tile size and do so.
+	if (input_key_pressed(KEY_L) && h_size > HANGAR_SMALL) {
+		h_size--;
+		hangar_Init();
+		hangar_InitSelector();
+	}
+
+	if (input_key_pressed(KEY_R) && h_size < HANGAR_LARGE) {
+		h_size++;
+		hangar_Init();
+		hangar_InitSelector();
 	}
 
 	// If the selected tile has changed, mark it as selected and clear the previous tile.
 	if (prevX != selectX | prevY != selectY) {
-		dprintf("Getting here");
-		drawHangarTile(SB_PAGE, startGridX + selectX, startGridY + selectY, 1, HANGAR_SIZE);
-		drawHangarTile(SB_PAGE, startGridX + prevX, startGridY + prevY, 2, HANGAR_SIZE);
+
+		// Clear the previous tile
+		drawHangarTile(startGridX + selectX, startGridY + selectY, 1, 0);
+
+		// Draw the new tile
+		drawHangarTile(startGridX + prevX, startGridY + prevY, 2, 0);
 
 		prevX = selectX;
 		prevY = selectY;
@@ -170,40 +200,6 @@ void hangar_HandleInputs() {
 
 }
 
-void drawHangarTile(int sb, int coordX, int coordY, int tileI, HANGAR_TILE_SIZE size, int altTileI) {
-
-	// dprintf("Received coords %d, %d for tile %d\n", coordX, coordY, tileI);
-
-	switch (size) {
-
-	case HANGAR_SMALL:
-		MAP[sb][coordY][coordX] = tileI;
-		break;
-
-	case HANGAR_MEDIUM:
-		MAP[sb][coordY][coordX] = tileI;
-		MAP[sb][coordY][coordX + 1] = tileI | BIT(10);
-		MAP[sb][coordY + 1][coordX] = tileI | BIT(11);
-		MAP[sb][coordY + 1][coordX + 1] = tileI | BIT(10) | BIT(11);
-		break;
-
-	case HANGAR_LARGE:
-		MAP[sb][coordY][coordX] = tileI;
-		MAP[sb][coordY][coordX + 1] = altTileI;
-		MAP[sb][coordY][coordX + 2] = tileI | BIT(10);
-
-		MAP[sb][coordY + 1][coordX] = altTileI;
-		MAP[sb][coordY + 1][coordX + 1] = altTileI;
-		MAP[sb][coordY + 1][coordX + 2] = altTileI | BIT(10);
-
-		MAP[sb][coordY + 2][coordX] = tileI | BIT(11);
-		MAP[sb][coordY + 2][coordX + 1] = altTileI | BIT(11);
-		MAP[sb][coordY + 2][coordX + 2] = tileI | BIT(11) | BIT(10);
-		break;
-
-	}
-
-}
 
 void splash_HandleInputs() {
 	if (input_key_pressed(KEY_UP) && splash_screen_eff != splash_PulseGray)				splash_screen_eff = splash_PulseGray;
