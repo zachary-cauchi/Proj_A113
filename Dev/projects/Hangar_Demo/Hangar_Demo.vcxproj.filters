@@ -15,6 +15,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Hangar_Demo\build\GROUND_EXP_pcx.h">
+      <Filter>Hangar_Demo\build</Filter>
+    </ClInclude>
+    <ClInclude Include="Hangar_Demo\build\main_menu_orig_pcx.h">
+      <Filter>Hangar_Demo\build</Filter>
+    </ClInclude>
     <ClInclude Include="Hangar_Demo\build\main_menu_pcx.h">
       <Filter>Hangar_Demo\build</Filter>
     </ClInclude>
@@ -27,10 +33,10 @@
     <ClInclude Include="Hangar_Demo\build\title_pulse_pcx.h">
       <Filter>Hangar_Demo\build</Filter>
     </ClInclude>
-    <ClInclude Include="Hangar_Demo\include\BG_0_GROUND.h">
+    <ClInclude Include="Hangar_Demo\include\graphics_controller.h">
       <Filter>Hangar_Demo\include</Filter>
     </ClInclude>
-    <ClInclude Include="Hangar_Demo\include\graphics_controller.h">
+    <ClInclude Include="Hangar_Demo\include\hangar.h">
       <Filter>Hangar_Demo\include</Filter>
     </ClInclude>
     <ClInclude Include="Hangar_Demo\include\input_controller.h">
@@ -50,10 +56,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Hangar_Demo\source\BG_0_GROUND.c">
+    <ClCompile Include="Hangar_Demo\source\graphics_controller.c">
       <Filter>Hangar_Demo\source</Filter>
     </ClCompile>
-    <ClCompile Include="Hangar_Demo\source\graphics_controller.c">
+    <ClCompile Include="Hangar_Demo\source\hangar.c">
       <Filter>Hangar_Demo\source</Filter>
     </ClCompile>
     <ClCompile Include="Hangar_Demo\source\hangar_demo.c">

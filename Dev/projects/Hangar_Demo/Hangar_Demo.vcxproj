@@ -36,12 +36,14 @@
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Hangar_Demo\build\GROUND_EXP_pcx.h" />
+    <ClInclude Include="Hangar_Demo\build\main_menu_orig_pcx.h" />
     <ClInclude Include="Hangar_Demo\build\main_menu_pcx.h" />
     <ClInclude Include="Hangar_Demo\build\menu_spr_wip_pcx.h" />
     <ClInclude Include="Hangar_Demo\build\title_pcx.h" />
     <ClInclude Include="Hangar_Demo\build\title_pulse_pcx.h" />
-    <ClInclude Include="Hangar_Demo\include\BG_0_GROUND.h" />
     <ClInclude Include="Hangar_Demo\include\graphics_controller.h" />
+    <ClInclude Include="Hangar_Demo\include\hangar.h" />
     <ClInclude Include="Hangar_Demo\include\input_controller.h" />
     <ClInclude Include="Hangar_Demo\include\randlib.h" />
     <ClInclude Include="Hangar_Demo\include\slug.h" />
@@ -49,8 +51,8 @@
     <ClInclude Include="Hangar_Demo\include\tile.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Hangar_Demo\source\BG_0_GROUND.c" />
     <ClCompile Include="Hangar_Demo\source\graphics_controller.c" />
+    <ClCompile Include="Hangar_Demo\source\hangar.c" />
     <ClCompile Include="Hangar_Demo\source\hangar_demo.c" />
     <ClCompile Include="Hangar_Demo\source\input_controller.c" />
     <ClCompile Include="Hangar_Demo\source\slug.c" />
