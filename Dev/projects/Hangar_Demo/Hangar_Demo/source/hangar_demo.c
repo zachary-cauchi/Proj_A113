@@ -67,12 +67,7 @@ int main(void)
 	// Load tile set and palette 
 	DecodePCX(GROUND_EXP_pcx, CHAR_BASE_ADR(0), BG_PALETTE);
 
-	tiles = Tile_InitTileMatrix(h_height, h_width);
-	slug = Slug_CreateSlug(tiles, h_width, h_height, SLUG_SIZE);
-
-	// Initialise the hangar and draw the slug
-	hangar_Init();
-	Hangar_DrawSlug(slug);
+	Hangar_Init(SB_PAGE, startGridX, startGridY, h_width, h_height, h_size, SLUG_SIZE);
 
 	// Set up the interrupt handlers
 	irqInit();
@@ -95,23 +90,8 @@ int main(void)
 		//graphics_Update();
 		// Process key inputs
 		input_key_reads();
-		hangar_HandleInputs();
-
-		if (input_key_pressed(KEY_SELECT)) {
-
-			// Create a new slug
-			Slug_DestroySlug(slug);
-			slug = Slug_CreateSlug(tiles, h_width, h_height, SLUG_SIZE);
 		
-			// Reinitialise the hangar and draw the new slug
-			hangar_Init();
-			Hangar_DrawSlug(slug);
-		}
-
-		// Redraws the slug
-		if (input_key_pressed(KEY_START)) {
-			Hangar_DrawSlug(slug);
-		}
+		Hangar_Update();
 
 		//splash_HandleInputs();
 	}
@@ -119,70 +99,6 @@ int main(void)
 	// Frees up resources. This code will never be reached, but serves as convention to be prepared to clean up.
 	free(tiles);
 	Slug_DestroySlug(slug);
-
-}
-
-void hangar_Init() {
-
-	// Fill the screenblock with the 
-	clearScreenblock(SB_PAGE, 13);
-
-	// Draw the slug ground map
-	Hangar_DrawGroundMap(SB_PAGE, h_size, startGridX, startGridY, h_width, h_height);
-
-	// Draw initial starting tile
-	Hangar_DrawHangarTile(0, 0, 1, 0);
-}
-
-void clearScreenblock(int sb, int filltile) {
-	// Map each tile in the screenblock to the fill tile
-	for (int x = 0; x < 32; x++) {
-		for (int y = 0; y < 32; y++) {
-			MAP[SB_PAGE][y][x] = filltile;
-		}
-	}
-}
-
-void hangar_HandleInputs() {
-
-	int selectX = 0;
-	int selectY = 0;
-
-	// Input handling for selected tile x-coordinate movement.
-	if (input_key_pressed(KEY_LEFT)) {
-		selectX--;
-	}
-	else if (input_key_pressed(KEY_RIGHT)) {
-		selectX++;
-	}
-
-	// Input handling for selected tile y-coordinate movement
-	if (input_key_pressed(KEY_UP)) {
-		selectY--;
-	}
-	else if (input_key_pressed(KEY_DOWN)) {
-		selectY++;
-	}
-
-	// Check if the user wishes to increase or decrease the hangar tile size and do so.
-	if (input_key_pressed(KEY_L) && h_size > HANGAR_SMALL) {
-		h_size--;
-		hangar_Init();
-		Hangar_InitSelector();
-		Hangar_DrawSlug(slug);
-	}
-
-	if (input_key_pressed(KEY_R) && h_size < HANGAR_LARGE) {
-		h_size++;
-		hangar_Init();
-		Hangar_InitSelector();
-		Hangar_DrawSlug(slug);
-	}
-
-	// If either of the values are not 0, update the selector
-	if (selectX || selectY) {
-		Hangar_MoveSelector(selectX, selectY);
-	}
 
 }
 

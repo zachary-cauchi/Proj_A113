@@ -16,19 +16,22 @@ typedef enum HANGER_TILE_SIZE {
 int hangar_x_coord;
 int hangar_y_coord;
 
+int hangar_slug_size;
+
 int hangar_width;
 int hangar_height;
 int hangar_total_width;					//< Hangar width measured in GBA tiles.
 int hangar_total_height;				//< Hangar height measured in GBA tiles.
-
-int selectX;		//< Selected slug grid tile on X-axis (offset not absolute).
-int selectY;		//< Selected slug grid tile on Y-axis (offset not absolute).
 
 void Hangar_MoveSelector(int xOffset, int yOffset);
 
 void Hangar_DrawSlug(Slug * s);
 
 void Hangar_InitSelector();
+
+void Hangar_Init(int sb, int xCoord, int yCoord, int width, int height, HANGAR_TILE_SIZE size, int slugSize);
+
+void Hangar_Update();
 
 /**
  * Draws the groundmap for the hangar.
